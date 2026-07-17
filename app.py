@@ -16,24 +16,23 @@ def predict_diabetes(
     diabetes_pedigree,
     age,
 ):
-    input_data = [[
-        pregnancies,
-        glucose,
-        blood_pressure,
-        skin_thickness,
-        insulin,
-        bmi,
-        diabetes_pedigree,
-        age
-    ]]
+    data = pd.DataFrame([{
+        "Pregnancies": pregnancies,
+        "Glucose": glucose,
+        "BloodPressure": blood_pressure,
+        "SkinThickness": skin_thickness,
+        "Insulin": insulin,
+        "BMI": bmi,
+        "DiabetesPedigreeFunction": diabetes_pedigree,
+        "Age": age
+    }])
 
-    prediction = diabetes_model.predict(input_data)[0]
+    prediction = diabetes_model.predict(data)[0]
 
     if prediction == 1:
-        return "⚠️ Positive for Diabetes\n\nPlease consult a healthcare professional."
+        return "⚠️ Positive for Diabetes\nPlease consult a healthcare professional."
     else:
         return "✅ No Diabetes Detected"
-
 
 demo = gr.Interface(
     fn=predict_diabetes,
