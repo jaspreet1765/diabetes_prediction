@@ -2,7 +2,7 @@ import os
 import gradio as gr
 import joblib
 
-# Load trained model
+# Load the trained model
 diabetes_model = joblib.load("diabetes_prediction_model.pkl")
 
 
@@ -16,25 +16,24 @@ def predict_diabetes(
     diabetes_pedigree,
     age,
 ):
-    data = pd.DataFrame([{
-        "Pregnancies": pregnancies,
-        "Glucose": glucose,
-        "BloodPressure": blood_pressure,
-        "SkinThickness": skin_thickness,
-        "Insulin": insulin,
-        "BMI": bmi,
-        "DiabetesPedigreeFunction": diabetes_pedigree,
-        "Age": age
-    }])
-
-    prediction = diabetes_model.predict(data)[0]
+    prediction = diabetes_model.predict([[
+        pregnancies,
+        glucose,
+        blood_pressure,
+        skin_thickness,
+        insulin,
+        bmi,
+        diabetes_pedigree,
+        age
+    ]])[0]
 
     if prediction == 1:
-        return "⚠️ Positive for Diabetes\nPlease consult a healthcare professional."
+        return "⚠️ Positive for Diabetes\n\nPlease consult a healthcare professional."
     else:
         return "✅ No Diabetes Detected"
 
-demo = gr.Interface(
+
+interface = gr.Interface(
     fn=predict_diabetes,
     inputs=[
         gr.Number(label="👶 Pregnancies", value=0),
@@ -48,13 +47,14 @@ demo = gr.Interface(
     ],
     outputs=gr.Textbox(label="Prediction Result"),
     title="🩺 Diabetes Prediction System",
-    description="Enter the patient's medical information below. The machine learning model will predict whether the patient is likely to have diabetes.",
-    theme=gr.themes.Soft(),
+    description="""
+Enter the patient's medical information below.
+The machine learning model will predict whether the patient is likely to have diabetes.
+""",
 )
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 7860))
-    demo.launch(
+    interface.launch(
         server_name="0.0.0.0",
-        server_port=port,
+        server_port=int(os.environ.get("PORT", 7860))
     )
